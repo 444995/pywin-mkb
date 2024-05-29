@@ -23,7 +23,7 @@ mouse.right_click()
 
 ```
 
-Here is an example of how to use pywin-mkb for the mouse:
+Here is an example of how to use pywin-mkb for the keyboard:
 ```
 from pywin_mkb.keyboard import KeyboardController
 
