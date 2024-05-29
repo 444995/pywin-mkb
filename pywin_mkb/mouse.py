@@ -1,15 +1,17 @@
 import ctypes
 from .utils import convert_to_absolutes
 
+
+INPUT_MOUSE = 0
+MOUSEEVENTF_MOVE = 0x0001
+MOUSEEVENTF_ABSOLUTE = 0x8000
+MOUSEEVENTF_LEFTDOWN = 0x0002
+MOUSEEVENTF_LEFTUP = 0x0004
+MOUSEEVENTF_RIGHTDOWN = 0x0008
+MOUSEEVENTF_RIGHTUP = 0x0010
+
 class MouseController:
     def __init__(self):
-        self.INPUT_MOUSE = 0
-        self.MOUSEEVENTF_MOVE = 0x0001
-        self.MOUSEEVENTF_ABSOLUTE = 0x8000
-        self.MOUSEEVENTF_LEFTDOWN = 0x0002
-        self.MOUSEEVENTF_LEFTUP = 0x0004
-        self.MOUSEEVENTF_RIGHTDOWN = 0x0008
-        self.MOUSEEVENTF_RIGHTUP = 0x0010
         self.SendInput = ctypes.windll.user32.SendInput
 
         class MOUSEINPUT(ctypes.Structure):
@@ -64,39 +66,43 @@ class MouseController:
         self.send_mouse_input(
             dx=absolute_x,
             dy=absolute_y,
-            flag=self.MOUSEEVENTF_MOVE | self.MOUSEEVENTF_ABSOLUTE
+            flag=MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE
         )
 
     def move_relative(self, x, y):
         self.send_mouse_input(
             dx=int(x * (self.screen_x / 1920)),
             dy=int(y * (self.screen_x / 1080)),
-            flag=self.MOUSEEVENTF_MOVE
+            flag=MOUSEEVENTF_MOVE
         )
 
 
     def left_click(self, x=0, y=0):
+        # left mb down
         self.send_mouse_input(
             dx=x,
             dy=y,
-            flag=self.MOUSEEVENTF_LEFTDOWN
+            flag=MOUSEEVENTF_LEFTDOWN
         )
 
+        # left mb up
         self.send_mouse_input(
             dx=x,
             dy=y,
-            flag=self.MOUSEEVENTF_LEFTUP
+            flag=MOUSEEVENTF_LEFTUP
         )
 
     def right_click(self, x=0, y=0):
+        # right mb down
         self.send_mouse_input(
             dx=x,
             dy=y,
-            flag=self.MOUSEEVENTF_RIGHTDOWN
+            flag=MOUSEEVENTF_RIGHTDOWN
         )
 
+        # right mb up
         self.send_mouse_input(
             dx=x,
             dy=y,
-            flag=self.MOUSEEVENTF_RIGHTUP
+            flag=MOUSEEVENTF_RIGHTUP
         )

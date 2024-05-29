@@ -1,10 +1,10 @@
-# pywin-mouse
-pywin-mouse allows you to control the mouse on Windows extremely easily - it leverages *pywin32*, specifically SendInput, so it's blazingly fast.
+# pywin-mkb
+pywin-mkb allows you to control the mouse and keyboard on Windows extremely easily - it leverages *ctypes* so it's blazingly fast.
 
 ## Usage
-Here is an example of how to use pywin-mouse:
+Here is an example of how to use pywin-mkb for the mouse:
 ```
-from pywin_mouse import MouseController
+from pywin_mkb.mouse import MouseController
 
 # Initialize the MouseController
 mouse = MouseController()
@@ -23,10 +23,22 @@ mouse.right_click()
 
 ```
 
+Here is an example of how to use pywin-mkb for the mouse:
+```
+from pywin_mkb.keyboard import KeyboardController
+
+# Initialize the KeyboardController
+keyboard = KeyboardController()
+
+# Write "Hello"
+keyboard.write("Hello")
+
+```
+
 ## Installation
 To install, clone the repository and install it using *pip*:
 ```
-git clone https://github.com/oliver748/pywin-mouse
-cd pywin-mouse
+git clone https://github.com/oliver748/pywin-mkb
+cd pywin-mkb
 pip install .
 ```

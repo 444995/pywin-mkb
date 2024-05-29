@@ -1,1 +1,2 @@
-from .main import MouseController
+from .mouse import MouseController
+from .keyboard import KeyboardController
