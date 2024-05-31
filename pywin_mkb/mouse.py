@@ -1,5 +1,5 @@
 import ctypes
-from .utils import convert_to_absolutes
+from .utils import convert_to_absolute_coords, convert_to_relative_coords
 
 
 INPUT_MOUSE = 0
@@ -10,9 +10,17 @@ MOUSEEVENTF_LEFTUP = 0x0004
 MOUSEEVENTF_RIGHTDOWN = 0x0008
 MOUSEEVENTF_RIGHTUP = 0x0010
 
+class Button:
+    left = 0
+    right = 1
+    middle = 2
+
 class MouseController:
     def __init__(self):
         self.SendInput = ctypes.windll.user32.SendInput
+
+        class POINT(ctypes.Structure):
+            _fields_ = [("x", ctypes.c_long), ("y", ctypes.c_long)]
 
         class MOUSEINPUT(ctypes.Structure):
             _fields_ = [
@@ -37,12 +45,18 @@ class MouseController:
 
         self.INPUT = INPUT
         self.MOUSEINPUT = MOUSEINPUT
+        self.POINT = POINT
 
         self.screen_x, self.screen_y = ctypes.windll.user32.GetSystemMetrics(0), ctypes.windll.user32.GetSystemMetrics(1)
 
+    def _get_current_mouse_pos(self):
+        cursor = self.POINT()
+        ctypes.windll.user32.GetCursorPos(ctypes.byref(cursor))
+        return cursor
+
     def send_mouse_input(self, dx, dy, flag, time=0):
         _input = self.INPUT(
-            type=self.INPUT_MOUSE,
+            type=INPUT_MOUSE,
             mi=self.MOUSEINPUT(
                 dx=dx,
                 dy=dy,
@@ -56,7 +70,7 @@ class MouseController:
         self.SendInput(1, ctypes.byref(_input), ctypes.sizeof(_input))
 
     def move_absolute(self, x=0, y=0):
-        absolute_x, absolute_y = convert_to_absolutes(
+        absolute_x, absolute_y = convert_to_absolute_coords(
             dx=x,
             dy=y,
             screen_x=self.screen_x,
@@ -70,39 +84,45 @@ class MouseController:
         )
 
     def move_relative(self, x, y):
+        relative_x, relative_y = convert_to_relative_coords(
+            dx=x,
+            dy=y,
+            screen_x=self.screen_x,
+            screen_y=self.screen_y
+        )
+
         self.send_mouse_input(
-            dx=int(x * (self.screen_x / 1920)),
-            dy=int(y * (self.screen_x / 1080)),
+            dx=relative_x,
+            dy=relative_y,
             flag=MOUSEEVENTF_MOVE
         )
 
 
-    def left_click(self, x=0, y=0):
-        # left mb down
-        self.send_mouse_input(
-            dx=x,
-            dy=y,
-            flag=MOUSEEVENTF_LEFTDOWN
-        )
+    def press_button(self, button):
+        if button == Button.left:
+            self.send_mouse_input(0, 0, MOUSEEVENTF_LEFTDOWN)
+        elif button == Button.right:
+            self.send_mouse_input(0, 0, MOUSEEVENTF_RIGHTDOWN)
+        
+    def release_button(self, button):
+        if button == Button.left:
+            self.send_mouse_input(0, 0, MOUSEEVENTF_LEFTUP)
+        elif button == Button.right:
+            self.send_mouse_input(0, 0, MOUSEEVENTF_RIGHTUP)
 
-        # left mb up
-        self.send_mouse_input(
-            dx=x,
-            dy=y,
-            flag=MOUSEEVENTF_LEFTUP
-        )
 
-    def right_click(self, x=0, y=0):
-        # right mb down
-        self.send_mouse_input(
-            dx=x,
-            dy=y,
-            flag=MOUSEEVENTF_RIGHTDOWN
-        )
+    def click(self, button, x=None, y=None):
+        """click func moves absolute to x, y; not relative"""
 
-        # right mb up
-        self.send_mouse_input(
-            dx=x,
-            dy=y,
-            flag=MOUSEEVENTF_RIGHTUP
-        )
+        # makes sure that user can for example only pass x=200 without specifying y
+        if x is None:
+            x = self._get_current_mouse_pos().x
+        if y is None:
+            y = self._get_current_mouse_pos().y
+        
+        self.move_absolute(x=x, y=y)
+        
+        self.press_button(button=button)
+        self.release_button(button=button)
+
+
