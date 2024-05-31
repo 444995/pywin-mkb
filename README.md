@@ -4,7 +4,7 @@ pywin-mkb allows you to control the mouse and keyboard on Windows extremely easi
 ## Usage
 Here is an example of how to use pywin-mkb for the mouse:
 ```
-from pywin_mkb.mouse import MouseController
+from pywin_mkb.mouse import MouseController, Button
 
 # Initialize the MouseController
 mouse = MouseController()
@@ -16,10 +16,10 @@ mouse.move_absolute(x=0, y=0)
 mouse.move_relative(x=100, y=50)
 
 # Perform a left click at the current mouse position
-mouse.left_click()
+mouse.click(Button.left)
 
 # Perform a right click at the current mouse position
-mouse.right_click()
+mouse.click(Button.right, x=200)
 
 ```
 
