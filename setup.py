@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='pywin_mouse',
+    name='pywin_mkb',
     version='0.1',
     packages=find_packages(),
     install_requires=[
@@ -9,7 +9,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'pywin_mouse=pywin_mouse.main:main',
+            'pywin_mkb=pywin_mkb.main:main',
         ],
     },
 )
